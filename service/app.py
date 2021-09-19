@@ -4,16 +4,6 @@ from schemas import load_schema
 
 from wsgiref.simple_server import make_server
 import os
-# import pandas as pd
-# from datetime import datetime, date, time
-# import json
-# import logging
-# from logging.handlers import RotatingFileHandler
-# import pickle
-
-# from prophet import Prophet
-# import sys
-# import time
 
 from resources.Predict import Predict
 from logger import logger
