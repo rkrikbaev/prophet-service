@@ -1,0 +1,7 @@
+python.idea/
+.vscode/
+__pycache__/
+*.tar.gz
+*.tar
+/model
+.venv
