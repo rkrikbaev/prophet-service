@@ -1,0 +1,40 @@
+stages:
+  - build
+  - deploy
+  - error
+build:
+  stage: build
+  script:
+    - export userFromGitlab=$GITLAB_USER_NAME
+    - echo $usernameFromGitlab
+
+    - cp -R /opt/scripts/zbuilder.py .
+    - cp -R /opt/scripts/builder.sh .
+    
+    - python3 zbuilder.py build docker docker docker $CI_PROJECT_NAME $CI_COMMIT_REF_NAME $GITLAB_USER_NAME $CI_COMMIT_SHA
+
+    - sudo bash builder.sh 
+
+  tags:
+    - build
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploy"
+    - export userFromGitlab=$GITLAB_USER_NAME
+    - echo $usernameFromGitlab
+    - cp -R /opt/scripts/zbuilder.py .
+
+    - python3 zbuilder.py deploy $CI_COMMIT_SHA $CI_PROJECT_NAME $CI_COMMIT_REF_NAME
+    - sudo python3 /opt/scripts/zbuilder.py send-msg good $CI_PROJECT_NAME  $CI_PROJECT_URL  $CI_COMMIT_REF_NAME  $GITLAB_USER_NAME $CI_PIPELINE_URL
+
+  tags:
+    - deploy
+error:
+  stage: error
+  script:
+    - echo "Failed"
+    - sudo python3 /opt/scripts/zbuilder.py send-msg fail $CI_PROJECT_NAME  $CI_PROJECT_URL  $CI_COMMIT_REF_NAME  $GITLAB_USER_NAME $CI_PIPELINE_URL
+  when: on_failure
+  tags:
+    - error
