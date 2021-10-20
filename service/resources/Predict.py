@@ -19,11 +19,11 @@ class Predict:
 
     @jsonschema.validate(req_schema=load_schema('request'))
     def on_post(self, req, resp):
-
+        
         resp.status = falcon.HTTP_400
         data =  req.media
 
-        # model = data["model"]
+        logger.debug(data)
         settings = data["settings"]
         history = data["history"]
         future = data["future"]

@@ -4,8 +4,9 @@ ARG SERVICE_VERSION=v1.0.0
 
 RUN pip install --upgrade pip
 
-RUN pip install falcon==3.0.1
-RUN pip install jsonschema
+RUN pip install falcon==3.0.1 && \
+    pip install jsonschema
+
 
 EXPOSE 8005
 

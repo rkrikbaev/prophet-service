@@ -56,43 +56,17 @@ class CallPredictAction():
 
             future = self.create_df(future) # 2d array
             history = self.create_df(history) # 2d array
-            
-            ## -- this logic must be implemented in OPERATOR
 
-            # if (len(data.columns) - 1) == len(future.columns):
-            #     pass
-            # else:
-            #     logger.info('History data columns must be more on one of regressor data')
-            #     raise ValueError
+            for item in future.columns:
+                if item not in ['ds','y']:
+                    self.model.add_regressor(item)
 
-            # if len(future.columns) > 1:
-
-            #     hist_columns = ['ds','y']
-            #     future_columns =[] 
-
-            #     for index, item in enumerate(future.columns):
-                    
-            #         if index > 0:
-            #             regressor_id = f'x_{index}'
-            #             self.model.add_regressor(regressor_id)
-            #             hist_columns.append(regressor_id)
-            #             future_columns.append(regressor_id)
-            #         else:
-            #             future_columns.append('ds')
-
-            #     future.columns = future_columns
-            #     data.columns = hist_columns
-
-            start_fit = int(time.time())
             self.model.fit(history)
-            end_fit = int(time.time())
-
-            logger.debug(f'fit time in: {end_fit - start_fit} seconds')
             
             forecast = self.model.predict(future)
 
-            # response["predictions"] = forecast["yhat"].values.tolist()
             response["result"] = str(forecast.to_dict())
+            response['prediction'] = forecast['yhat'].values.tolist()
             response['state'] = {'status':'ok'}
 
         except Exception as e:
