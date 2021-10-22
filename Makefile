@@ -1,5 +1,4 @@
 build:
-	sudo rm -r logs
-	docker build -t rkrikbaev/servie-prophet:v1.0.1 .
+	docker build -t rkrikbaev/service-prophet:v1.1.4 .
 run:
-	docker run -it --rm -v /Users/rustamkrikbayev/PycharmProjects/webserveAs1C/service/prophet:/app -p 8005:8005 rkrikbaev/pyinstaller:prophet
+	docker run --rm -v /Users/rustamkrikbayev/prophet/service:/app -p 8005:8005 rkrikbaev/service-prophet:v1.1.4

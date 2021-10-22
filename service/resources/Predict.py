@@ -6,13 +6,10 @@ import time
 
 from logger import logger
 from schemas import load_schema
-from logic.predict_job import CallPredictAction
+from logic import CallPredictAction
 
 # Make prediction
 class Predict:
-
-    def __init__(self, cfg=None):
-        self.cfg = cfg
     
     def on_get(self, req, resp):
         resp.media = "ok"

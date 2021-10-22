@@ -11,7 +11,6 @@ class CallPredictAction():
     def __init__(self, settings, model_info=None):
 
         self.settings = settings
-        # self.model_info = model_info
 
         self.model = Prophet(
             growth = settings["growth"],
@@ -29,13 +28,10 @@ class CallPredictAction():
                 period = season['period'],
                 fourier_order = season['fourier_order']
             )
-
-        # self.point = self.model_info["point"]
-        # self.version = self.model_info["version"]
     
-    def create_df(self, sample=None):
+    def create_df(self, sample):
 
-        _data = pd.DataFrame(data=sample)
+        _data = pd.DataFrame(sample.get('data'),columns=sample.get('columns'))
 
         if len(_data) == 0:
             logger.info('Dataset cannot be empty')
