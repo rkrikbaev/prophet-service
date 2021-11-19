@@ -1,4 +1,4 @@
-FROM rkrikbaev/prophet-env-amd64:v1.0
+FROM fpcloud/prophet-env-amd64:v1.0
 
 LABEL Auth: Krikbayev Rustam 
 LABEL Email: "rkrikbaev@gmail.com"
