@@ -1,10 +1,10 @@
-FROM rkrikbaev/pyinstaller_prophet:v1.0.1
+FROM rkrikbaev/prophet-env-amd64:v1.0
 
 LABEL Auth: Krikbayev Rustam 
 LABEL Email: "rkrikbaev@gmail.com"
 ARG SERVICE_VERSION=v1.1.4
 
-ENV REFRESHED_AT 2020-10-20
+ENV REFRESHED_AT 2020-11-20
 
 RUN pip install --upgrade pip
 
