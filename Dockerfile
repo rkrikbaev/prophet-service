@@ -21,4 +21,4 @@ COPY ./service /application
 
 RUN mkdir logs
 
-CMD ["python", "app.py"]
+CMD ["/bin/bash", "start.sh"]
