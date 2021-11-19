@@ -11,6 +11,8 @@ RUN pip install --upgrade pip
 RUN pip install falcon==3.0.1 && \
     pip install jsonschema
 
+RUN pip install pyinstaller
+
 EXPOSE 8005
 
 RUN mkdir application
