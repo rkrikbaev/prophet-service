@@ -19,4 +19,4 @@ COPY ./service /application
 
 RUN mkdir logs
 
-CMD ["python", "__main__.py"]
+CMD ["python", "app.py"]
