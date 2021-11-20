@@ -1,9 +1,6 @@
 import falcon
 from falcon.media.validators import jsonschema
 
-import datetime
-import time
-
 from logger import logger
 from schemas import load_schema
 from logic import CallPredictAction
