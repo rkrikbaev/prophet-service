@@ -7,7 +7,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 cwd  = os.getcwd()
 
-log_path = f'{cwd}/logs/log.log'
+# log_path = f'{cwd}/logs/log.log'
 
 # create logger
 logger = logging.getLogger(__name__)
@@ -22,21 +22,21 @@ formatter = logging.Formatter(
 console = logging.StreamHandler()
 console.setLevel(logging.DEBUG)
 
-# create file handler and set level to debug
-filelog = RotatingFileHandler(
-    filename=f'{log_path}', 
-    mode="a", 
-    maxBytes=1024 * 1024
-    )
+# # create file handler and set level to debug
+# filelog = RotatingFileHandler(
+#     filename=f'{log_path}', 
+#     mode="a", 
+#     maxBytes=1024 * 1024
+#     )
 
-filelog.setLevel(logging.DEBUG)
+# filelog.setLevel(logging.DEBUG)
 
 # add formatter
 console.setFormatter(formatter)
-filelog.setFormatter(formatter)
+# filelog.setFormatter(formatter)
 
 # add console to logger
 logger.addHandler(console)
 
-# add filelog to logger
-logger.addHandler(filelog)
+# # add filelog to logger
+# logger.addHandler(filelog)
