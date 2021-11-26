@@ -1,15 +1,30 @@
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
-# import jsonschema
-from schemas import load_schema
+
 from modelInstance import CallPredictAction
 
 import os
 import time
 import json
-import sys
 
-from logger import logger
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter(
+    f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+)
+
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+
+# add formatter
+console.setFormatter(formatter)
+
+# add console to logger
+logger.addHandler(console)
 
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
@@ -63,7 +78,7 @@ if __name__ == "__main__":
     while True:
             
         body = input('Input: ')
-        print(f'console: {body}')
+        print(f'input: {body}')
         
         # pipe = os.fdopen(3)
         # body = pipe.readline()
@@ -71,17 +86,9 @@ if __name__ == "__main__":
         data = json.loads(body)
         
         if {'metadata', 'history', 'future'} <= set(data):
-            
             response = job(input_data=data)
-            logger.info(response)
-
-            os.write(4, bytes(f'{response}\n',"UTF-8")) #4 
+            print(f'output {response}')
+            # os.write(4, bytes(f'{response}\n',"UTF-8")) #4 
                 
         else:
-
             time.sleep(5)
-                    
-
-
-
-    

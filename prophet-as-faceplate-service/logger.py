@@ -2,10 +2,10 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-os.chdir(dname)
-cwd  = os.getcwd()
+# abspath = os.path.abspath(__file__)
+# dname = os.path.dirname(abspath)
+# os.chdir(dname)
+# cwd  = os.getcwd()
 
 # log_path = f'{cwd}/logs/log.log'
 

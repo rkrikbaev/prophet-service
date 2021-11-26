@@ -1,2 +1,3 @@
 #! /bin/bash
-/bin/bash
+# /bin/bash
+python service.py
