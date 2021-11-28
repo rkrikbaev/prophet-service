@@ -1,6 +1,6 @@
 FROM fpcloud/prophet-env-amd64:latest
 
-LABEL Auth: Krikbayev Rustam 
+LABEL Auth: Krikbayev Rustam
 LABEL Email: "rkrikbaev@gmail.com"
 
 ENV REFRESHED_AT 2020-11-20

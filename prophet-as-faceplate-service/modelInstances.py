@@ -4,7 +4,7 @@ from logger import logger
 from prophet import Prophet
 
 
-class CallPredictAction():
+class ProphetModel():
 
     def __init__(self, settings, model_info=None):
 
@@ -26,7 +26,7 @@ class CallPredictAction():
                 period = season['period'],
                 fourier_order = season['fourier_order']
             )
-    
+    # prepare data for fitting
     def create_prophet_df(self, data, columns):
 
         columns_size = len(columns) #2
@@ -49,7 +49,7 @@ class CallPredictAction():
             _data.reset_index(inplace=True, drop=True)
 
             return _data
-
+    # fit model and get prediction
     def run(self, history, future):
 
         response = {}
@@ -75,3 +75,11 @@ class CallPredictAction():
         
         finally:
             return forecast
+    # find anomalies
+    def anomalies(self, result)-> list:
+
+        forecast = result[['ds', 'yhat', 'yhat_lower', 'yhat_upper']]
+        forecast.query('yhat_lower>yhat or yhat_upper<yhat', inplace=True)
+        filtred_anomalies = forecast[['ds', 'yhat']]
+        
+        return filtred_anomalies.values.tolist()

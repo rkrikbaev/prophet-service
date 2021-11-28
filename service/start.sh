@@ -1,3 +1,3 @@
-#! /bin/bash
-# /bin/bash
-python service.py
+#!/bin/bash
+
+python3 service.py

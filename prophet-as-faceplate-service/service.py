@@ -1,7 +1,7 @@
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 
-from modelInstance import CallPredictAction
+from modelInstances import ProphetModel
 
 import os
 import time
@@ -44,12 +44,10 @@ def job(input_data:dict)->dict:
     history = input_data.get("history")
     future = input_data.get("future")
     
-    inst = CallPredictAction(settings, model_info=None)
+    inst = ProphetModel(settings, model_info=None)
         
-    logger.debug("Call model")
-    # Serve until model return response
     forecast = inst.run(history, future)
-    anomalies_list = anomalies(forecast)
+    anomalies_list = inst.anomalies(forecast)
 
     finish_time = time.ctime()
 
@@ -65,30 +63,31 @@ def job(input_data:dict)->dict:
 
     return response_body
 
-def anomalies(result)-> list:
-
-    forecast = result[['ds', 'yhat', 'yhat_lower', 'yhat_upper']]
-    forecast.query('yhat_lower>yhat or yhat_upper<yhat', inplace=True)
-    filtred_anomalies = forecast[['ds', 'yhat']]
-    
-    return filtred_anomalies.values.tolist()
-
 if __name__ == "__main__":
     
+    r, w = os.pipe()
+        
     while True:
-            
-        body = input('Input: ')
-        print(f'input: {body}')
-        
-        # pipe = os.fdopen(3)
-        # body = pipe.readline()
 
-        data = json.loads(body)
-        
-        if {'metadata', 'history', 'future'} <= set(data):
-            response = job(input_data=data)
-            print(f'output {response}')
-            # os.write(4, bytes(f'{response}\n',"UTF-8")) #4 
+        response = {}
+
+        try:
+            with os.fdopen(r, "rb") as rf:
                 
-        else:
-            time.sleep(5)
+                content = rf.readline()
+                data = json.loads(content)
+            
+                if {'metadata', 'history', 'future'} <= set(data):
+                    response = job(input_data=data)
+                    print(f'output {response}')
+                else:
+                    raise RuntimeError
+        
+        except Exception as exc:
+            
+            print(f'error{exc}')
+        
+        finally:
+            
+            with os.fdopen(w, "wb") as wf:
+                wf.write(bytes(f'{response}\n',"UTF-8"))
