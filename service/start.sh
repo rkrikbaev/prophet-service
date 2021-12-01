@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 service.py
+python3 app.py

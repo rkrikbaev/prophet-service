@@ -1,7 +1,6 @@
 import pandas as pd
 from datetime import datetime, date, time
-import sys
-import time
+
 from logger import logger
 from prophet import Prophet
 

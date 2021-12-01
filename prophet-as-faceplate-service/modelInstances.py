@@ -26,6 +26,7 @@ class ProphetModel():
                 period = season['period'],
                 fourier_order = season['fourier_order']
             )
+    
     # prepare data for fitting
     def create_prophet_df(self, data, columns):
 
@@ -49,6 +50,7 @@ class ProphetModel():
             _data.reset_index(inplace=True, drop=True)
 
             return _data
+    
     # fit model and get prediction
     def run(self, history, future):
 
@@ -75,6 +77,7 @@ class ProphetModel():
         
         finally:
             return forecast
+    
     # find anomalies
     def anomalies(self, result)-> list:
 
