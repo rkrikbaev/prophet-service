@@ -12,5 +12,4 @@ service/dist/service
 faceplate-service/build/service/PKG-00.pkg
 prophet-as-faceplate-service/service
 faceplate-service/dist/service
-service/logs/log.log
-prophet-as-faceplate-service/logs/log.log
+service/logs/log.*

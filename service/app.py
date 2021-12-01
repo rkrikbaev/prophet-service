@@ -13,7 +13,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 cwd  = os.getcwd()
 
-model_path = f'{cwd}/models' # path to saved Prophet's models
+model_path = './model' # path to saved Prophet's models
 
 api = falcon.App()
 
@@ -21,7 +21,9 @@ api.add_route("/action", Predict())
 
 if __name__ == "__main__":
 
-    with make_server("", 8005, api) as httpd:
+    app_port = os.getenv('APP_PORT', default=8005)
+
+    with make_server("", app_port, api) as httpd:
         logger.debug("Listening Port 8005...")
         # Serve until process is killed
         httpd.serve_forever()
