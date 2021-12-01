@@ -1,9 +1,14 @@
-FROM rkrikbaev/pyinstaller_prophet:v1.0.1
+FROM fpcloud/prophet-env-amd64:latest
 
-ARG SERVICE_VERSION=v1.0.0
+LABEL Auth: Krikbayev Rustam
+LABEL Email: "rkrikbaev@gmail.com"
 
-RUN pip install falcon==3.0.1 \
-    pip install jsonschema \
+ENV REFRESHED_AT 2020-11-20
+
+RUN pip install --upgrade pip
+
+RUN pip install falcon==3.0.1 && \
+    pip install jsonschema
 
 EXPOSE 8005
 
@@ -13,4 +18,4 @@ COPY ./service /application
 
 RUN mkdir logs
 
-CMD ["python", "app.py"]
+CMD ["/bin/bash", "start.sh"]

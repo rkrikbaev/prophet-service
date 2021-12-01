@@ -5,3 +5,11 @@ __pycache__/
 *.tar
 /model
 .venv
+build/
+dist/
+service/build/service/service.pkg
+service/dist/service
+faceplate-service/build/service/PKG-00.pkg
+prophet-as-faceplate-service/service
+faceplate-service/dist/service
+service/logs/log.*
