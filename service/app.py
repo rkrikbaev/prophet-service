@@ -8,10 +8,10 @@ import os
 from resources.Predict import Predict
 from logger import logger
 
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-os.chdir(dname)
-cwd  = os.getcwd()
+#abspath = os.path.abspath(__file__)
+#dname = os.path.dirname(abspath)
+#os.chdir(dname)
+#cwd  = os.getcwd()
 
 model_path = './model' # path to saved Prophet's models
 
