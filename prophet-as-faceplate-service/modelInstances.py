@@ -1,10 +1,14 @@
 from os import spawnlp
 import pandas as pd
-from logger import logger
+
 from prophet import Prophet
 
+import logging
 
-class ProphetModel():
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+class ProphetInst():
 
     def __init__(self, settings, model_info=None):
 

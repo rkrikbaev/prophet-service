@@ -1,9 +1,9 @@
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 
-from modelInstances import ProphetModel
+from modelInstances import ProphetInst
 
-import os
+import os, sys
 import time
 import json
 
@@ -33,6 +33,14 @@ cwd  = os.getcwd()
 
 model_path = f'{cwd}/models' # path to saved Prophet's models
 
+def send_to(message):
+
+    try:
+        print("writing: ", message)
+        os.write(4, bytes(f'{message}\n',"UTF-8")) #4
+    except Exception as err:
+        time.sleep(10)
+
 def job(input_data:dict)->dict:
 
     start_time = time.ctime()
@@ -44,7 +52,7 @@ def job(input_data:dict)->dict:
     history = input_data.get("history")
     future = input_data.get("future")
     
-    inst = ProphetModel(settings, model_info=None)
+    inst = ProphetInst(settings, model_info=None)
         
     forecast = inst.run(history, future)
     anomalies_list = inst.anomalies(forecast)
@@ -65,29 +73,34 @@ def job(input_data:dict)->dict:
 
 if __name__ == "__main__":
     
-    r, w = os.pipe()
-        
+    pw = os.open("pipeFrom", os.O_WRONLY | os.O_CREAT)
+    pr = os.open("pipeTo", os.O_RDONLY | os.O_CREAT)
+
     while True:
 
         response = {}
 
         try:
-            with os.fdopen(r, "rb") as rf:
+
+            with os.fdopen(pr, "rb") as rf:
                 
                 content = rf.readline()
                 data = json.loads(content)
+
+                logger.debug(f'received data {data}')
             
                 if {'metadata', 'history', 'future'} <= set(data):
                     response = job(input_data=data)
-                    print(f'output {response}')
+                    logger.debug(response)
                 else:
-                    raise RuntimeError
+                    logger.info('data must have METADATA, HISTORY, FUTURE fields')
         
         except Exception as exc:
             
-            print(f'error{exc}')
+            logger.error(exc)
+            sys.exit(0)
         
         finally:
-            
-            with os.fdopen(w, "wb") as wf:
-                wf.write(bytes(f'{response}\n',"UTF-8"))
+
+            sys.exit(0)
+

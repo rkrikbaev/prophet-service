@@ -13,3 +13,5 @@ faceplate-service/build/service/PKG-00.pkg
 prophet-as-faceplate-service/service
 faceplate-service/dist/service
 service/logs/log.*
+prophet_venv/
+pipe*
