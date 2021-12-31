@@ -40,7 +40,7 @@ pw = os.open("pipeTo", os.O_RDWR | os.O_CREAT) #pipe client - > server
 pr = os.open("pipeFrom", os.O_RDWR | os.O_CREAT) #pipe server - > client
 # print(pr, pw)
 
-writesBytes = os.write(pw, bytes(message))
+writesBytes = os.write(pw, bytes(message, 'utf-8'))
 # print(writesBytes)
 
 rf = os.fdopen(pr, 'rb', 0)
