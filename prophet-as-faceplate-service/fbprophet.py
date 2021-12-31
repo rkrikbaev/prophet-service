@@ -33,11 +33,11 @@ cwd  = os.getcwd()
 
 model_path = f'{cwd}/models' # path to saved Prophet's models
 
-def send_to(message):
+def send_to(fd, message):
 
     try:
         print("writing: ", message)
-        os.write(4, bytes(f'{message}\n',"UTF-8")) #4
+        os.write(fd, bytes(f'{message}\n',"UTF-8")) #4
     except Exception as err:
         time.sleep(10)
 
@@ -73,34 +73,42 @@ def job(input_data:dict)->dict:
 
 if __name__ == "__main__":
     
+    
     pw = os.open("pipeFrom", os.O_WRONLY | os.O_CREAT)
-    pr = os.open("pipeTo", os.O_RDONLY | os.O_CREAT)
+    
+    try:
+        pr = os.open("pipeTo", os.O_RDONLY)
+    except FileNotFoundError as exc:
+        logger.error(exc)
+        sys.exit(1)
 
-    while True:
+    try:
+        with os.fdopen(pr, "rb") as rf:
+            content = rf.read()
+    except OSError as exc:
+        logger.error(exc)
+        sys.exit(1)
 
-        response = {}
-
-        try:
-
-            with os.fdopen(pr, "rb") as rf:
-                
-                content = rf.readline()
-                data = json.loads(content)
-
-                logger.debug(f'received data {data}')
+    try:
             
-                if {'metadata', 'history', 'future'} <= set(data):
-                    response = job(input_data=data)
-                    logger.debug(response)
-                else:
-                    logger.info('data must have METADATA, HISTORY, FUTURE fields')
-        
-        except Exception as exc:
-            
-            logger.error(exc)
-            sys.exit(0)
-        
-        finally:
+        if bool(content):
 
-            sys.exit(0)
+            data = json.loads(content)
+
+            logger.debug(f'received data {data}')
+        
+            if {'metadata', 'history', 'future'} <= set(data):
+                response = job(input_data=data)
+                send_to(pw, message=response)
+                logger.debug(response)
+
+            else:
+                logger.info('data must have METADATA, HISTORY, FUTURE fields')
+        else:
+            logger.info('file is empty')
+    except Exception as exc:
+        
+        logger.error(exc)
+
+    sys.exit(0)
 
