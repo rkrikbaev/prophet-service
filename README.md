@@ -24,3 +24,9 @@ python -m nuitka --follow-import-to=pandas --follow-import-to=numpy --nofollow-i
 ## pyinstaller
 
 pyinstaller -F fbprophet.spec
+
+
+
+## Start docker container manualy for test
+
+docker run --name for_test_service -i -t -v /home/wacs/services/prophet-service:/application -v /home/wacs/Downloads/gunicorn:/gunicorn -p 8005:8005 fpcloud/prophet-service-amd64 /bin/bash

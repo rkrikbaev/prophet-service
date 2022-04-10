@@ -1,10 +1,11 @@
 import os, time
 import datetime
+import json
 
 
 JSON = '''{
     "metadata": {
-        "point": "shym-2", 
+        "point": "shym-4", 
         "type": "prophet",
         "settings":{
             "growth": "linear",
@@ -35,18 +36,50 @@ print('Request at {0}'.format(gt))
 
 # message = 'Data from client at {0}\n'.format(gt)
 
+# uncomment if read/write from/to by filename
+# pw = os.open("pipeTo", os.O_RDWR | os.O_CREAT) #pipe client - > server
+# pr = os.open("pipeFrom", os.O_RDONLY | os.O_CREAT) #pipe server - > client
 
-pw = os.open("pipeTo", os.O_RDWR | os.O_CREAT) #pipe client - > server
-pr = os.open("pipeFrom", os.O_RDWR | os.O_CREAT) #pipe server - > client
-# print(pr, pw)
+# uncomment if read/write from/to by filedescriptor
+# Create a pipe. Return a pair of file descriptors (r, w) usable for reading and writing, respectively.
+os.pipe()
 
-writesBytes = os.write(pw, bytes(message, 'utf-8'))
+writesBytes = os.write(4, bytes(message, 'utf-8'))
 # print(writesBytes)
 
-rf = os.fdopen(pr, 'rb', 0)
-resp = rf.readline()
+# wait for response 60 sec
+time.sleep(1)
 
-print(resp)
+# uncomment if read/write from/to by filename
+# resp = os.read(pr,1000)
+# rf = os.fdopen(pr, 'rb', 0)
+# resp = rf.readlines()
+# print(resp)
 
+# uncomment if read/write from/to by filedescriptor
+# 'metadata', 'prediction', 'anomalies'
+i=0
+content = b''
+
+rf = os.fdopen(3)
+# content = rf.readline()
+
+while True:
+    try:
+        content = rf.readline()
+        i +=1
+        print('wait: ', i)
+        if content is not None:
+            content = json.loads(content)
+            print(content)
+            if {'metadata', 'prediction', 'anomalies'} <= set(content):
+                print(content)
+                break
+        time.sleep(10)  
+        print('next')          
+    except OSError as exc:
+        pass
+
+print(content)
 os.close(pw)
-rf.close()
+# os.close(pr)

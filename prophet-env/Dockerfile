@@ -19,6 +19,8 @@ RUN cd prophet-${PROPHET_VER}/python && \
     pip install -r requirements.txt && \
     python setup.py install
 
+RUN pip install mlflow=='1.24.0'
+
 COPY ./hooks /pyinstaller-${PYINSTALLER_VER}/PyInstaller/hooks
 
 RUN cd pyinstaller-${PYINSTALLER_VER} && \

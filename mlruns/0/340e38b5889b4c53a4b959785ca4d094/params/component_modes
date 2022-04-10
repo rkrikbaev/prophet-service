@@ -1,0 +1,1 @@
+{'additive': ['yearly', 'additive_terms', 'extra_regressors_additive', 'holidays'], 'multiplicative': ['multiplicative_terms', 'extra_regressors_multiplicative']}
