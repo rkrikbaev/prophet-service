@@ -1,14 +1,19 @@
 # import pickle
 # from xmlrpc.client import boolean
+# from lib2to3.pgen2.pgen import DFAState
+import mlflow
+
+from prophet.diagnostics import cross_validation, performance_metrics
+from prophet import Prophet, serialize
+# from prophet.serialize import model_to_json, model_from_json
+
 import pandas as pd
-from datetime import datetime, date, time
-
-from logger import logger
-from prophet import Prophet
-
-from prophet.serialize import model_to_json, model_from_json
 import json
 import os
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class Model():
@@ -19,8 +24,8 @@ class Model():
         print('receive settings')
 
         self.model = Prophet(
-            growth = settings["growth"],
-            seasonality_mode = "multiplicative",
+            growth=self.settings["growth"],
+            seasonality_mode=self.settings["seasonality_mode"],
             changepoint_prior_scale = self.settings['changepoint_prior_scale'], #30,
             seasonality_prior_scale = self.settings['seasonality_prior_scale'], #35,
             daily_seasonality = self.settings['daily_seasonality'],
@@ -40,68 +45,95 @@ class Model():
         self.save_model_after = False
         self.saved_model = None
         
-        if os.path.exists(self.path):
+        #if os.path.exists(self.path):
             
-            self.model_available = self._load()
-            self.save_model_after = True
+        #    self.model_available = self._load()
+        #    self.save_model_after = True
+    
+    def call(self, func, history, future) -> dict:
 
-    def predict(self, history_data, regression) -> dict:
-        
-        """
-        [Main flow fit/train and predict]
+        if len(history[0]) <= len(future[0]):
 
-        Args:
-            history (2Darray): [History data fit model]
-            future (2Darray): [Future dataset]
-
-        Returns:
-            dict:[return result of prediction as dict with fields: result, prediction, state]
-
-        """
-
-        data_columns = ['ds', 'y']
-        regression_columns = ['ds']
-
-        # how_many_elements_in_regression = len(regression[0])
-
-        if len(history_data[0]) <= len(regression[0]):
-
-            logger.error('History data columns must include regressor data')
-            raise RuntimeError
-
-        regressor_names = [
-            f'x_{index}' for index, _ in enumerate(regression[0]) if index > 0]
-        
-        data_columns.extend(regressor_names)
-        regression_columns.extend(regressor_names)
-
-        df_data = self._process_data(
-            data=history_data,
-            columns=data_columns
-        )
-
-        df_resression = self._process_data(
-            data=regression,
-            columns=regression_columns
-        )     
-
-        for item in regressor_names:
-            self.model.add_regressor(item)
-        
-        if self.model_available:
-
-            self.model.fit(df_data, init=self._stan_init(m=self.saved_model))
-
+            logger.warn('History data columns must include regressor data')
+       
         else:
+
+            history_columns = ['ds', 'y']
+            future_columns = ['ds']
+
+            additional_column_names = [f'x_{index}' for index, _ in enumerate(future[0]) if index > 0]
             
-            self.model.fit(df_data)
+            history_columns.extend(additional_column_names)
+            future_columns.extend(additional_column_names)
+
+            for item in additional_column_names:
+                self.model.add_regressor(item)
+
+            if func == 'train':
+
+                df = self._process_data(
+                    data=history, columns=history_columns)
+                self.train(df=df)
+
+            elif func == 'predict':
+
+                df = self._process_data(
+                    data=history, columns=history_columns)
+                
+                self.train(df=df)
+
+                df = self._process_data(
+                    data=future, columns=future_columns)
+                
+                return self.predict(df=df)
+            
+            else:
+
+                logger.warn('Func was not selected')
+
+    
+    def train(self, df) -> dict:
+
+        ARTIFACT_PATH = "model"
         
-        if self.save_model_after:
-            self._save()
+        with mlflow.start_run():
+
+            model = self.model.fit(df)
+
+            params = self.extract_params(model)
+
+            # metric_keys = ["mse", "rmse", "mae", "mape", "mdape", "smape", "coverage"]
+            # metrics_raw = cross_validation(
+            #     model=model,
+            #     horizon="365 days",
+            #     period="180 days",
+            #     initial="710 days",
+            #     parallel="threads",
+            #     disable_tqdm=True,
+            # )
+
+            # cv_metrics = performance_metrics(metrics_raw)
+            # metrics = {k: cv_metrics[k].mean() for k in metric_keys}
+
+            # print(f"Logged Metrics: \n{json.dumps(metrics, indent=2)}")
+            print(f"Logged Params: \n{json.dumps(params, indent=2)}")
+
+            mlflow.prophet.log_model(model, artifact_path=ARTIFACT_PATH)
+            mlflow.log_params(params)
+            # mlflow.log_metrics(metrics)
+
+            self.model_uri = mlflow.get_artifact_uri(ARTIFACT_PATH)
+            print(f"Model artifact logged to: {self.model_uri}")
+
+    def predict(self, df) -> dict:
+
+        loaded_model = mlflow.prophet.load_model(self.model_uri)
+
+        forecast = loaded_model.predict(df)
+
+        print(f"forecast:\n${forecast.head(30)}")
         
-        response = self.model.predict(df_resression)
-        
-        return response
+        return forecast
         
     def _process_data(self, data, columns=None)->pd.DataFrame:
 
@@ -121,62 +153,5 @@ class Model():
 
         return df
 
-    def _save(self) -> bool:
-
-        logger.debug('try to save model')
-        
-        if os.path.exists(self.path):
-            with open(f'{self.path}/model.json', 'w') as fout:
-                json.dump(model_to_json(self.model), fout)  # Save model
-                logger.debug('model saved')
-                return True
-        else:
-            logger.info(f'Cannot save the model')
-  
-    def _load(self) -> bool:
-        
-        logger.debug('try to load model')
-        
-        path = f'{self.path}/model.json'
-        print(path)
-
-        if os.path.exists(path):
-            with open(path, 'r') as fin:
-                self.saved_model = model_from_json(
-                    json.load(fin))  # Load model
-                logger.debug('model loaded')
-                return True
-        else:        
-            logger.info(f'Model {path} not exist')
-            return False
-
-    def _stan_init(self, m):
-
-        """Retrieve parameters from a trained model.
-        
-        Retrieve parameters from a trained model in the format
-        used to initialize a new Stan model.
-        
-        Parameters
-        ----------
-        m: A trained model of the Prophet class.
-        
-        Returns
-        -------
-        A Dictionary containing retrieved parameters of m.
-        
-        """
-        params = {}
-
-        if m is None:
-            return None
-        else:
-
-            print(m.params)
-        
-            for pname in ['k', 'm', 'sigma_obs']:
-                params[pname] = m.params[pname][0][0]
-            for pname in ['delta', 'beta']:
-                params[pname] = m.params[pname][0]
-        
-        return params
+    def extract_params(self, pr_model):
+        return {attr: getattr(pr_model, attr) for attr in serialize.SIMPLE_ATTRIBUTES}

@@ -11,14 +11,14 @@ RUN pip install falcon==3.0.1 && \
     pip install jsonschema \
     pip install gunicorn
 
+VOLUME [ "/mlruns" ]
+
 EXPOSE 8005
 
 RUN mkdir application
 WORKDIR /application
-RUN mkdir model
 
-COPY ./web_app /app
+COPY ./web_app .
 
 RUN mkdir logs
 CMD ["gunicorn"  , "-b", "0.0.0.0:8005", "app:api"]
-# CMD ["/bin/bash", "start.sh"]

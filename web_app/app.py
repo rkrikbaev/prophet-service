@@ -1,7 +1,7 @@
 import falcon
 from resources.model import Predict
 
-import logging
+import logging, os
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -17,10 +17,10 @@ logger.info('Server Loaded')
 # --------- For local debugging/test only ----------
 # if __name__ == "__main__":
 
-    # app_port = os.getenv('APP_PORT', default=8005)
+#     app_port = os.getenv('APP_PORT', default=8005)
 
-    # with make_server("", int(app_port), api) as httpd:
-    #     logger.debug("Listening Port 8005...")
-    #     # Serve until process is killed
-    #     httpd.serve_forever()
+#     with make_server("", int(app_port), api) as httpd:
+#         logger.debug("Listening Port 8005...")
+#         # Serve until process is killed
+#         httpd.serve_forever()
 # --------- For local debugging/test only ----------

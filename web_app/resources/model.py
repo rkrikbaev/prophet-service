@@ -28,14 +28,12 @@ class Predict:
         
         settings = data["settings"]
         features = data["features"]
-        history_data = data["data"]
-        regression_data = data["regression"]
+        history_data = data["history"]
+        future_data = data["future"]
 
         model = Model(settings)
 
-        forecast = model.predict(
-            history_data, regression=regression_data
-            )
+        forecast = model.call('predict', history_data, future_data)
 
         resp.media = self._filter_response(forecast, features)
         resp.status = falcon.HTTP_201
