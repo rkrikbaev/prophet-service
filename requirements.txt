@@ -1,0 +1,5 @@
+falcon==3.0.1
+jsonschema
+gunicorn
+gevent
+mlflow

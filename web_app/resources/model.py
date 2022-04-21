@@ -5,6 +5,8 @@ from logger import logger
 from schemas import load_schema
 from modelInstance import Model
 
+import json
+
 # Make prediction
 class Predict:
     
@@ -26,7 +28,7 @@ class Predict:
 
         logger.debug(data)
         
-        settings = data["settings"]
+        settings = json.loads(data["settings"])
         features = data["features"]
         history_data = data["history"]
         future_data = data["future"]
