@@ -18,6 +18,7 @@ It works best with time series that have strong seasonal effects and several sea
 Prophet is robust to missing data and shifts in the trend, and typically handles outliers well.
 
 """
+ARTIFACT_PATH = "model"
 
 class ProphetModel():
 
@@ -41,8 +42,12 @@ class ProphetModel():
                 period = season['period'],
                 fourier_order = season['fourier_order']
             )
-    
-    def call(self, func, history, future) -> dict:
+
+        self.model_uri = None
+
+    def call(self, history, future, model_uri) -> tuple:
+
+        self.model_uri = model_uri
 
         if len(history[0]) <= len(future[0]):
 
@@ -60,32 +65,20 @@ class ProphetModel():
 
             for item in additional_column_names:
                 self.model.add_regressor(item)
-
-            if func == 'train':
-
-                df = self._process_data(
-                    data=history, columns=history_columns)
-                self.train(df=df)
-
-            elif func == 'predict':
-
-                df = self._process_data(
-                    data=history, columns=history_columns)
                 
-                self.train(df=df)
-
-                df = self._process_data(
-                    data=future, columns=future_columns)
+            if self.model_uri == None:
                 
-                return self.predict(df=df)
+                df = self._process_data(
+                data=history, columns=history_columns)
+                self.model_uri = self.train(df=df)
             
-            else:
+            df = self._process_data(
+                data=future,
+                columns=future_columns)
 
-                logger.warn('Func was not selected')
+            return self.predict(df), self.model_uri
 
     def train(self, df) -> dict:
-
-        ARTIFACT_PATH = "model"
         
         with mlflow.start_run():
 
@@ -104,11 +97,12 @@ class ProphetModel():
             if cross_validation_params and cross_validation_enable:
                 metrics_raw = cross_validation(
                     model=fitted_model,
-                    horizon=cross_validation_params.get('horizon'), # "365 days",
-                    period=cross_validation_params.get('period'),  # "180 days",
-                    initial=cross_validation_params.get('initial'),  # "710 days",
+                    horizon=cross_validation_params.get('horizon'), # "365",
+                    period=cross_validation_params.get('period'),  # "180",
+                    initial=cross_validation_params.get('initial'),  # "710",
                     parallel=cross_validation_params.get('parallel'),  # "threads",
-                    disable_tqdm=cross_validation_params.get('disable_tqdm')  # True,
+                    disable_tqdm=cross_validation_params.get('disable_tqdm'),  # True,
+                    units=cross_validation_params.get('units') # days
                 )
 
                 cv_metrics = performance_metrics(metrics_raw)
@@ -120,18 +114,18 @@ class ProphetModel():
                 mlflow.log_metrics(metrics)
             
             mlflow.log_params(params)
-            
 
             self.model_uri = mlflow.get_artifact_uri(ARTIFACT_PATH)
-            print(f"Model artifact logged to: {self.model_uri}")
+            
+            logger.debug(f"Model artifact logged to: {self.model_uri}")
 
-    def predict(self, df) -> dict:
+            return self.model_uri
+
+    def predict(self, df) -> pd.DataFrame:
 
         loaded_model = mlflow.prophet.load_model(self.model_uri)
 
         forecast = loaded_model.predict(df)
-
-        print(f"forecast:\n${forecast.head(30)}")
         
         return forecast
         

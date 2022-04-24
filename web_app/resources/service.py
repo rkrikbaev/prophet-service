@@ -23,23 +23,25 @@ class Predict:
             "regression": []
         }
         
-        resp.status = falcon.HTTP_400
         data =  req.media
 
-        logger.debug(data)
+        logger.debug(f'Incomming data: {list(data.keys())}')
         
         settings = json.loads(data["settings"])
         features = data["features"]
         history_data = data["history"]
         future_data = data["future"]
+        model_uri = data.get("model_uri")
 
         model = ProphetModel(settings)
 
-        forecast = model.call('predict', history_data, future_data)
-
-        resp.media = self._filter_response(forecast, features)
-        resp.status = falcon.HTTP_201
-        logger.debug('Succesefull response')
+        forecast, model_uri = model.call(
+            history_data, future_data, model_uri)
+        response = self._filter_response(forecast, features)
+        response["model_uri"] = model_uri
+        logger.debug(f'Outgoing data keys: {list(response.keys())}')
+        logger.debug(f'Outgoing data: {response}')
+        resp.media = response
 
     def _filter_response(self, forecast, features)->dict:
         
