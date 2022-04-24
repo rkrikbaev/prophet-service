@@ -1,6 +1,6 @@
 import os
 import json
-from logger import logger
+from middleware.logger import logger
 
 def load_schema(name):
     module_path = os.path.dirname(__file__)

@@ -1,10 +1,7 @@
 import falcon
-from resources.model import Predict
+from resources.service import Predict
 
-import logging, os
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+from middleware.logger import logger
 
 api = falcon.App()
 api.add_route("/action", Predict())

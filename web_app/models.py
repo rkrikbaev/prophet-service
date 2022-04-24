@@ -1,6 +1,3 @@
-# import pickle
-# from xmlrpc.client import boolean
-# from lib2to3.pgen2.pgen import DFAState
 import mlflow
 
 from prophet.diagnostics import cross_validation, performance_metrics
@@ -9,19 +6,24 @@ from prophet import Prophet, serialize
 
 import pandas as pd
 import json
-import os
-import logging
+from middleware.logger import logger
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+"""
+Class Prophet:
 
+Prophet is a procedure for forecasting time series data based on 
+an additive model where non-linear 
+trends are fit with yearly, weekly, and daily seasonality, plus holiday effects. 
+It works best with time series that have strong seasonal effects and several seasons of historical data. 
+Prophet is robust to missing data and shifts in the trend, and typically handles outliers well.
 
-class Model():
+"""
+
+class ProphetModel():
 
     def __init__(self, settings):
 
         self.settings = settings
-        print('receive settings')
 
         self.model = Prophet(
             growth=self.settings["growth"],
@@ -39,16 +41,6 @@ class Model():
                 period = season['period'],
                 fourier_order = season['fourier_order']
             )
-
-        self.model_available = False
-        self.path = f'./model'
-        self.save_model_after = False
-        self.saved_model = None
-        
-        #if os.path.exists(self.path):
-            
-        #    self.model_available = self._load()
-        #    self.save_model_after = True
     
     def call(self, func, history, future) -> dict:
 
@@ -91,36 +83,44 @@ class Model():
 
                 logger.warn('Func was not selected')
 
-    
     def train(self, df) -> dict:
 
         ARTIFACT_PATH = "model"
         
         with mlflow.start_run():
 
-            model = self.model.fit(df)
+            fitted_model = self.model.fit(df)
+            mlflow.prophet.log_model(fitted_model, artifact_path=ARTIFACT_PATH)
+            
+            params = self.extract_params(fitted_model)
 
-            params = self.extract_params(model)
+            metric_keys = ["mse", "rmse", "mae", "mape", "mdape", "smape", "coverage"]    
+            cross_validation_params = self.settings.get('cross_validation')
 
-            # metric_keys = ["mse", "rmse", "mae", "mape", "mdape", "smape", "coverage"]
-            # metrics_raw = cross_validation(
-            #     model=model,
-            #     horizon="365 days",
-            #     period="180 days",
-            #     initial="710 days",
-            #     parallel="threads",
-            #     disable_tqdm=True,
-            # )
+            logger.debug(f'Cross validation params: {cross_validation_params}')
+            
+            cross_validation_enable = self.settings.get('cross_validation_enabled')
 
-            # cv_metrics = performance_metrics(metrics_raw)
-            # metrics = {k: cv_metrics[k].mean() for k in metric_keys}
+            if cross_validation_params and cross_validation_enable:
+                metrics_raw = cross_validation(
+                    model=fitted_model,
+                    horizon=cross_validation_params.get('horizon'), # "365 days",
+                    period=cross_validation_params.get('period'),  # "180 days",
+                    initial=cross_validation_params.get('initial'),  # "710 days",
+                    parallel=cross_validation_params.get('parallel'),  # "threads",
+                    disable_tqdm=cross_validation_params.get('disable_tqdm')  # True,
+                )
 
-            # print(f"Logged Metrics: \n{json.dumps(metrics, indent=2)}")
-            print(f"Logged Params: \n{json.dumps(params, indent=2)}")
+                cv_metrics = performance_metrics(metrics_raw)
+                metrics = {k: cv_metrics[k].mean() for k in metric_keys}
 
-            mlflow.prophet.log_model(model, artifact_path=ARTIFACT_PATH)
+                logger.debug(f"Logged Metrics: \n{json.dumps(metrics, indent=2)}")
+                logger.debug(f"Logged Params: \n{json.dumps(params, indent=2)}")
+
+                mlflow.log_metrics(metrics)
+            
             mlflow.log_params(params)
-            # mlflow.log_metrics(metrics)
+            
 
             self.model_uri = mlflow.get_artifact_uri(ARTIFACT_PATH)
             print(f"Model artifact logged to: {self.model_uri}")
@@ -154,4 +154,13 @@ class Model():
         return df
 
     def extract_params(self, pr_model):
-        return {attr: getattr(pr_model, attr) for attr in serialize.SIMPLE_ATTRIBUTES}
+        return {attr: getattr(pr_model, attr) for attr in serialize.SIMPLE_ATTRIBUTES} 
+    # find anomalies
+    def anomalies(self, result:pd.DataFrame, real_data:list) -> list:
+
+        result['real'] = real_data
+        forecast = result[['ds', 'yhat', 'yhat_lower', 'yhat_upper', 'real']]
+        forecast.query('yhat_lower>real or yhat_upper<real', inplace=True)
+        filtred_anomalies = forecast[['ds', 'yhat', 'real']]
+
+        return filtred_anomalies.values.tolist()

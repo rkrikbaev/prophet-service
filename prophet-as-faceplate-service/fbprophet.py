@@ -1,7 +1,7 @@
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 
-from modelInstance import ProphetInst
+from models import ProphetModel
 
 import os, sys
 import time
@@ -61,10 +61,10 @@ def job(input_data:dict)->dict:
     history = input_data.get("history")
     future = input_data.get("future")  
 
-    inst = ProphetInst(settings, model_info=None)
+    model = ProphetModel(settings, model_info=None)
 
-    forecast = inst.run(history, future)
-    anomalies_list = inst.anomalies(forecast)
+    forecast = model.run(history, future)
+    anomalies_list = model.anomalies(forecast)
 
     finish_time = time.ctime()
     

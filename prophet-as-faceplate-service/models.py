@@ -1,7 +1,7 @@
 """
 Classes for used models and algoritms
 
-Class ProphetInst:
+Class Prophet:
 
 Prophet is a procedure for forecasting time series data based on 
 an additive model where non-linear 
@@ -22,7 +22,8 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-class ProphetInst():
+
+class ProphetModel():
 
     def __init__(self, settings):
 
@@ -72,18 +73,6 @@ class ProphetInst():
     
     # fit model and get prediction
     def predict(self, history, future):
-        
-        """
-        [Main flow fit/train and predict]
-
-        Args:
-            history (2Darray): [History data fit model]
-            future (2Darray): [Future dataset]
-
-        Returns:
-            dict:[return result of prediction as dict with fields: result, prediction, state]
-
-        """
 
         response = {'state': 'error'}
      

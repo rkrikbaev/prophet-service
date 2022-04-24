@@ -1,9 +1,9 @@
 import falcon
 from falcon.media.validators import jsonschema
 
-from logger import logger
+from middleware.logger import logger
 from schemas import load_schema
-from modelInstance import Model
+from models import ProphetModel
 
 import json
 
@@ -33,7 +33,7 @@ class Predict:
         history_data = data["history"]
         future_data = data["future"]
 
-        model = Model(settings)
+        model = ProphetModel(settings)
 
         forecast = model.call('predict', history_data, future_data)
 
