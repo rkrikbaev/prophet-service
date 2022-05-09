@@ -8,20 +8,20 @@
     Prophet is robust to missing data and shifts in the trend, and typically handles outliers well.
 
 """
-from prophet.diagnostics import cross_validation, performance_metrics
-from prophet import Prophet, serialize
-import pandas as pd
-import mlflow
 import json
+import pandas as pd
+from prophet import Prophet, serialize
+from prophet.diagnostics import cross_validation, performance_metrics
+import mlflow
 import sys
 import logging
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
                     format=f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
 logger = logging.getLogger(__name__)
-
 # import holidays as holidays
 
 ARTIFACT_PATH = "model"
+
 
 class ProphetModel():
 
@@ -51,13 +51,13 @@ class ProphetModel():
     def call(self, history, future, model_uri) -> tuple:
         self.model_uri = model_uri
         regressor_names = [f'x_{index-2}' for index, _ in enumerate(
-            history[0]) if index > 1]      
+            history[0]) if index > 1]
         for item in regressor_names:
             self.model.add_regressor(item)
         while True:
             if self.model_uri is None or self.model_uri.find('artifacts/model') == -1:
                 logger.debug('train branch')
-                _columns = ['ds','y']
+                _columns = ['ds', 'y']
                 _columns.extend(regressor_names)
                 df = self._process_data(
                     data=history, columns=_columns)
@@ -150,9 +150,9 @@ class ProphetModel():
         df = pd.DataFrame(data=real_data)
         result['real'] = df[df.columns[1]]
 
-        forecast = result[['ds','yhat', 'yhat_lower', 'yhat_upper', 'real']]
+        forecast = result[['ds', 'yhat', 'yhat_lower', 'yhat_upper', 'real']]
 
         forecast.query('yhat_lower>real or yhat_upper<real', inplace=True)
-        filtred_anomalies = forecast[['ds','yhat', 'real']]
+        filtred_anomalies = forecast[['ds', 'yhat', 'real']]
 
         return filtred_anomalies.values.tolist()
