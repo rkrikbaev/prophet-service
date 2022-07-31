@@ -15,7 +15,7 @@ RUN pip install -r requirements.txt
 #     pip install jsonschema \
 #     pip install gunicorn
 
-VOLUME [ "/mlruns" ]
+# VOLUME [ "/mlruns" ]
 
 EXPOSE 8005
 
@@ -24,4 +24,4 @@ WORKDIR /application
 
 COPY ./web_app .
 
-CMD ["sh", "entry_point.sh"]
+CMD ["sh", "start.sh"]

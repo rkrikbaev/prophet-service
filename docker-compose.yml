@@ -1,9 +1,0 @@
-# version: "3"
-# services:
-#   package:
-#     image: rkrikbaev/service-prophet:v1.0.1
-#     build:
-#       context: .
-#       dockerfile: Dockerfile
-#     volumes:
-#       - .:/application

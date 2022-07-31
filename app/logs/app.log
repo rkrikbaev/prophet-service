@@ -1,0 +1,44 @@
+2022-07-31T02:28:14+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T02:28:14+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T02:30:09+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T02:30:09+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T02:34:48+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T02:34:48+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T02:38:19+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T02:38:19+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T02:39:17+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T02:39:17+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T02:39:28+06 [DEBUG] models.py:: 39 : There is no path to the model
+2022-07-31T02:45:42+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T02:45:42+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T02:45:50+06 [DEBUG] models.py:: 40 : There is no path to the model
+2022-07-31T02:46:00+06 [DEBUG] app.py  :: 32 : Outgoing data keys: ['model_uri', 'anomalies', 'prediction']
+2022-07-31T02:46:13+06 [DEBUG] app.py  :: 33 : Outgoing data: {'model_uri': 'file:///Users/rustamkrikbayev/prophet-service/mlruns/0/1ca7fad90aee40509a8ea07e967a6487', 'anomalies': [], 'prediction': {}}
+2022-07-31T02:47:08+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T02:47:08+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T02:47:20+06 [DEBUG] models.py:: 40 : There is no path to the model
+2022-07-31T02:47:34+06 [DEBUG] app.py  :: 32 : Outgoing data keys: ['model_uri', 'anomalies', 'prediction']
+2022-07-31T02:47:34+06 [DEBUG] app.py  :: 33 : Outgoing data: {'model_uri': 'file:///Users/rustamkrikbayev/prophet-service/mlruns/0/4b17c100c71748da878411938282fb96', 'anomalies': [], 'prediction': {}}
+2022-07-31T03:06:09+06 [DEBUG] models.py:: 43 : Preprocess data for a predict
+2022-07-31T03:07:22+06 [DEBUG] models.py:: 43 : Preprocess data for a predict
+2022-07-31T03:07:46+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T03:07:46+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T03:07:52+06 [DEBUG] models.py:: 44 : Preprocess data for a predict
+2022-07-31T03:08:45+06 [DEBUG] models.py:: 44 : Preprocess data for a predict
+2022-07-31T03:09:27+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T03:09:27+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T03:09:33+06 [DEBUG] models.py:: 44 : Preprocess data for a predict
+2022-07-31T03:10:31+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T03:10:31+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T03:10:35+06 [DEBUG] models.py:: 44 : Preprocess data for a predict
+2022-07-31T03:11:29+06 [DEBUG] models.py:: 44 : Preprocess data for a predict
+2022-07-31T03:34:58+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T03:34:58+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T03:36:08+06 [INFO] app.py  :: 42 : Server Loaded
+2022-07-31T03:36:08+06 [DEBUG] wsgi.py :: 15 : Listening Port 8005...
+2022-07-31T03:36:11+06 [DEBUG] models.py:: 44 : Preprocess data for a predict
+2022-07-31T03:36:33+06 [DEBUG] models.py:: 44 : Preprocess data for a predict
+2022-07-31T03:39:24+06 [DEBUG] models.py:: 44 : Preprocess data for a predict
+2022-07-31T03:40:19+06 [DEBUG] models.py:: 44 : Preprocess data for a predict
+2022-07-31T03:41:55+06 [DEBUG] app.py  :: 32 : Outgoing data keys: ['model_uri', 'anomalies', 'prediction']
+2022-07-31T03:42:03+06 [DEBUG] app.py  :: 33 : Outgoing data: {'model_uri': 'file:///Users/rustamkrikbayev/prophet-service/mlruns/0/a3f57663ddff4c7491d56c01382af098/artifacts/model', 'anomalies': [[1626321116.0, 66.1]], 'prediction': {'yhat': [25.313902098398444, 25.301906849776028, 21.400967331318675], 'yhat_lower': [13.388924795193011, 12.389795625041327, 9.04337970097036], 'yhat_upper': [37.71946114093613, 37.158029551768934, 34.16609606513957], 'trend': [25.82195987057441, 25.82195987057441, 25.82195987057441]}}

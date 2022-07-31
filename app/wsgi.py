@@ -1,9 +1,8 @@
 from app import api
-import os, sys
-import logging
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
-                    format=f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
-logger = logging.getLogger(__name__)
+import os
+
+from middleware.helper import get_logger
+logger = get_logger(__name__, loglevel='DEBUG')
 
 # --------- For local debugging/test only ----------
 from wsgiref.simple_server import make_server

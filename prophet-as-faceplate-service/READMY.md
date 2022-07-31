@@ -1,3 +1,0 @@
-
-# fbprophet
-## compile with pyinstaller

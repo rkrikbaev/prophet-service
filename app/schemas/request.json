@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "required": ["settings", "history", "future"],
+    "required": ["settings", "future"],
     "settings":{
         "type": "object",
         "properties": {
